@@ -403,6 +403,6 @@ Part E includes a dedicated, responsive dashboard featuring:
 
 ## 📬 Submission Details
 
-- **Public GitHub Repository URL:** `https://github.com/QuickCart/quickcart-advanced-javascript` *(or your submitted GitHub repo link)*
+- **Public GitHub Repository URL:** `https://github.com/addankimanusai/quickcart-advanced-javascript`
 - **Loom Walkthrough Video Link:** `https://www.loom.com/share/quickcart-advanced-javascript-walkthrough` *(or your recorded Loom link)*
 - **Live Deployment Link:** `N.A` (As instructed in the assessment guidelines)
