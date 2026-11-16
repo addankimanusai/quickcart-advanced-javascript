@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickCart — Performance Optimization & DOM Events (Part E)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>QuickCart Optimization & Events Console</h1>
+      <p>Interactive demonstration of Debouncing, Throttling, Memoization, Event Bubbling & Event Delegation</p>
+    </header>
+
+    <div class="grid">
+      <!-- TASK 1: Debouncing -->
+      <section class="card" id="task1-debouncing">
+        <div class="card-header">
+          <span class="card-title">Task 1: Search Debouncing (500 ms)</span>
+          <span class="badge" id="debounce-status-badge">Waiting for Input</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
+          Type rapidly in the search input. Keystrokes accumulate, but the search query executes only after 500ms of inactivity.
+        </p>
+        <div class="input-group">
+          <label for="search-input">Search QuickCart Catalog:</label>
+          <input type="text" id="search-input" placeholder="e.g. laptop, headphones, keyboard..." autocomplete="off">
+        </div>
+        <div class="stats-bar">
+          <div class="stat-item">
+            <div class="stat-value" id="keystroke-count">0</div>
+            <div class="stat-label">Keystroke Events</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="search-trigger-count" style="color: #2563eb;">0</div>
+            <div class="stat-label">Debounced API Calls</div>
+          </div>
+        </div>
+        <label style="font-size: 0.85rem; font-weight: 500; color: #64748b;">Search Query Results:</label>
+        <div class="results-box" id="search-results">
+          <div style="color: #94a3b8; font-style: italic;">No search performed yet. Start typing above...</div>
+        </div>
+      </section>
+
+      <!-- TASK 2: Throttling -->
+      <section class="card" id="task2-throttling">
+        <div class="card-header">
+          <span class="card-title">Task 2: Scroll Throttling (1000 ms)</span>
+          <span class="badge" id="throttle-status-badge">Idle</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
+          Scroll inside the inventory feed. High-frequency scroll events are throttled to execute at most once every 1,000ms.
+        </p>
+        <div class="stats-bar">
+          <div class="stat-item">
+            <div class="stat-value" id="raw-scroll-count">0</div>
+            <div class="stat-label">Raw Scroll Events</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="throttled-scroll-count" style="color: #16a34a;">0</div>
+            <div class="stat-label">Throttled Executions</div>
+          </div>
+        </div>
+        <div class="scroll-container" id="scroll-box">
+          <div class="scroll-content">
+            <p><strong>QuickCart Live Order & Inventory Stream</strong></p>
+            <p style="font-size: 0.85rem; margin-top: 8px; color: #475569;">
+              Scroll down to monitor warehouse updates. Notice how the raw event counter increments dozens of times per second while the throttled execution triggers periodically (1s interval).
+            </p>
+            <div style="margin-top: 200px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 4px;">
+              📦 Warehouse A - Inventory Synced
+            </div>
+            <div style="margin-top: 250px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 4px;">
+              🚚 Carrier Assigned - Transit Status Updated
+            </div>
+            <div style="margin-top: 250px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 4px;">
+              🏁 Delivery Confirmation Checkpoint reached
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TASK 3: Memoization -->
+      <section class="card" id="task3-memoization">
+        <div class="card-header">
+          <span class="card-title">Task 3: Discount Memoization</span>
+          <span class="badge" id="memo-status-badge">Cache Ready</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
+          Calculates discount: <code>calculateDiscount(price, percentage)</code>. Identical arguments are retrieved instantly from the closure cache.
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group">
+            <label for="memo-price">Price (₹):</label>
+            <input type="number" id="memo-price" value="50000" min="1">
+          </div>
+          <div class="input-group">
+            <label for="memo-discount">Discount (%):</label>
+            <input type="number" id="memo-discount" value="10" min="0" max="100">
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+          <button class="btn btn-primary" id="btn-calc-discount" style="flex: 1;">Calculate Discount</button>
+          <button class="btn btn-secondary" id="btn-quick-repeat" title="Runs same calculation 3 times to test cache">Run Repeat Test</button>
+        </div>
+        <div class="stats-bar">
+          <div class="stat-item">
+            <div class="stat-value" id="memo-fresh-count">0</div>
+            <div class="stat-label">Fresh Calculations</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="memo-cache-count" style="color: #16a34a;">0</div>
+            <div class="stat-label">Cache Hits</div>
+          </div>
+        </div>
+        <div id="memo-result-display" style="padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem;">
+          Result: Click "Calculate Discount" to test.
+        </div>
+      </section>
+
+      <!-- TASK 4: Bubbling & Event Delegation -->
+      <section class="card" id="task4-delegation">
+        <div class="card-header">
+          <span class="card-title">Task 4: Event Bubbling & Delegation</span>
+          <button class="btn btn-secondary" id="btn-reset-products" style="padding: 4px 10px; font-size: 0.75rem;">Reset Products</button>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
+          A single click listener is attached to the parent container (delegation). Toggle <code>stopPropagation()</code> to compare bubbling vs stopping.
+        </p>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="toggle-stop-propagation">
+          <label for="toggle-stop-propagation"><strong>Enable <code>event.stopPropagation()</code></strong> (Blocks bubbling to parent)</label>
+        </div>
+
+        <div id="product-list-container" style="padding: 10px; border: 2px dashed #cbd5e1; border-radius: 8px; background: #fafafa;">
+          <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 8px; font-weight: 600;">
+            PARENT CONTAINER (#product-list-container):
+          </div>
+          <div id="products-list">
+            <!-- Dynamic products inserted here -->
+          </div>
+        </div>
+
+        <div style="margin-top: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <label style="font-size: 0.85rem; font-weight: 500; color: #64748b;">Event Activity Terminal:</label>
+            <button class="btn btn-secondary" id="btn-clear-logs" style="padding: 2px 8px; font-size: 0.7rem;">Clear Log</button>
+          </div>
+          <div class="terminal" id="events-terminal">
+            <div class="terminal-line info">[System ready] Click 'Remove' on any product above.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- QUESTIONS & CONCEPTUAL ANSWERS SECTION -->
+    <section class="card faq-section">
+      <div class="card-header">
+        <span class="card-title">Conceptual Reference & Question Answers (Parts E)</span>
+        <span class="badge badge-success">Evaluated</span>
+      </div>
+
+      <div class="grid" style="margin-bottom: 0;">
+        <div class="faq-card">
+          <h3 style="color: #2563eb; margin-bottom: 12px; font-size: 1rem;">1. Debouncing vs Throttling</h3>
+          <div class="faq-item">
+            <h4>Q1: What is the difference between debouncing and throttling?</h4>
+            <p><strong>Debouncing</strong> delays execution until a specified quiet period (delay) has passed since the last event trigger; any new event resets the timer. <strong>Throttling</strong> guarantees that a function executes at a steady maximum rate of at most once per specified time window, regardless of how frequently events occur.</p>
+          </div>
+          <div class="faq-item">
+            <h4>Q2: Which suits search suggestions?</h4>
+            <p><strong>Debouncing</strong> suits search suggestions because you only want to issue an expensive network/database query once the user has paused or finished typing their keyword.</p>
+          </div>
+          <div class="faq-item">
+            <h4>Q3: Which suits scroll and resize events?</h4>
+            <p><strong>Throttling</strong> suits continuous events like scrolling, viewport resizing, or drag-and-drop, where continuous visual updates (e.g. progress indicators, infinite scroll) need regular, bounded execution without stuttering the browser main thread.</p>
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <h3 style="color: #2563eb; margin-bottom: 12px; font-size: 1rem;">2. Memoization & Closures</h3>
+          <div class="faq-item">
+            <h4>Q1: What is memoization?</h4>
+            <p>Memoization is an optimization technique that caches the return values of expensive, pure function calls based on their input arguments, allowing subsequent calls with the same inputs to return immediately from cache.</p>
+          </div>
+          <div class="faq-item">
+            <h4>Q2: How does it improve performance?</h4>
+            <p>It eliminates redundant CPU computations and reduces runtime complexity from exponential or linear to O(1) constant-time lookup for repeated argument sets.</p>
+          </div>
+          <div class="faq-item">
+            <h4>Q3: What role do closures play?</h4>
+            <p>Closures enable the outer memoize function to create a private, persistent cache object or Map in its lexical scope. The returned inner function retains lexical access to this private cache across invocations without exposing it as a global variable.</p>
+          </div>
+        </div>
+
+        <div class="faq-card" style="grid-column: 1 / -1;">
+          <h3 style="color: #2563eb; margin-bottom: 12px; font-size: 1rem;">3. Event Bubbling & Delegation</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+            <div class="faq-item">
+              <h4>Q1: What is event bubbling?</h4>
+              <p>Event bubbling is the phase in the DOM event propagation lifecycle where an event triggers first on the deepest target element and then bubbles upwards through its ancestor hierarchy until it reaches document and window.</p>
+            </div>
+            <div class="faq-item">
+              <h4>Q2: What is event delegation?</h4>
+              <p>Event delegation is a design pattern where a single event listener is attached to a shared ancestor element rather than attaching individual listeners to every descendant child element, leveraging event bubbling.</p>
+            </div>
+            <div class="faq-item">
+              <h4>Q3: Why is delegation useful for dynamically created elements?</h4>
+              <p>Because newly created DOM elements do not require manual listener attachment; any dynamically added child automatically bubbles its events to the preexisting parent listener.</p>
+            </div>
+            <div class="faq-item">
+              <h4>Q4: What does event.stopPropagation() do?</h4>
+              <p>It halts the propagation of the active event through the DOM tree, preventing it from bubbling up to parent ancestor listeners or traveling down during capture.</p>
+            </div>
+            <div class="faq-item">
+              <h4>Q5: Difference between event.target & event.currentTarget?</h4>
+              <p><strong>event.target</strong> is the actual, innermost DOM element that originated the event (e.g., the clicked button). <strong>event.currentTarget</strong> is the element that owns the currently executing event listener (e.g., the parent container).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
